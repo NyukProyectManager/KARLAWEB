@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Collage con Música - Sebastián Yatra 🎵</title>
+  <style>
+    :root {
+      --fondo: url("fondoflores.png"); /* Imagen de fondo reemplazable */
+      --sombra: 0 6px 20px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background-color: #e8e5dd;
+    }
+
+    /* Fondo principal */
+    .stage {
+      background-image: var(--fondo);
+      background-size: cover;
+      background-position: center;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Contenedor del collage */
+    .canvas {
+      position: relative;
+      width: 95%;
+      max-width: 420px;
+      height: 95%;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .polaroid {
+      position: absolute;
+      background: white;
+      border-radius: 8px;
+      box-shadow: var(--sombra);
+      padding: 10px;
+      transition: transform 0.4s ease, box-shadow 0.3s ease;
+    }
+
+    .polaroid:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      z-index: 5;
+    }
+
+    .frame {
+      background: #000;
+      width: 100%;
+      height: calc(100% - 20px);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Posiciones de las polaroids */
+    .p1 { top: 2%; left: 8%; width: 80%; height: 22%; transform: rotate(-4deg); }
+    .p2 { top: 26%; right: 6%; width: 78%; height: 22%; transform: rotate(3deg); }
+    .p3 { top: 50%; left: 10%; width: 80%; height: 22%; transform: rotate(-3deg); }
+    .p4 { bottom: 3%; right: 8%; width: 78%; height: 22%; transform: rotate(4deg); }
+    .p5 { top: 38%; left: 18%; width: 65%; height: 20%; transform: rotate(-8deg); }
+
+    /* Control flotante */
+    .sound-control {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.85);
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .sound-control:hover {
+      background: #fff;
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    /* Pantalla de carga */
+    .preloader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      flex-direction: column;
+      font-family: 'Poppins', sans-serif;
+      animation: fadeOut 1s ease 2s forwards;
+    }
+
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+
+    .spinner {
+      width: 50px; height: 50px;
+      border: 5px solid #ccc;
+      border-top-color: #ff7f50;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive para móviles */
+    @media (max-width: 480px) {
+      .canvas { max-width: 95vw; height: 95vh; }
+      .p1, .p2, .p3, .p4, .p5 { width: 90%; height: 18%; }
+      .sound-control { font-size: 14px; padding: 8px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla de carga -->
+  <div class="preloader">
+    <div class="spinner"></div>
+    <p>Cargando tu collage con amor... 💛</p>
+  </div>
+
+  <div class="stage">
+    <div class="canvas">
+      <div class="polaroid p1"><div class="frame"><video autoplay muted loop playsinline><source src="video1.mp4" type="video/mp4"></video></div></div>
+      <div class="polaroid p2"><div class="frame"><video autoplay muted loop playsinline><source src="video2.mp4" type="video/mp4"></video></div></div>
+      <div class="polaroid p3"><div class="frame"><video autoplay muted loop playsinline><source src="video3.mp4" type="video/mp4"></video></div></div>
+      <div class="polaroid p4"><div class="frame"><video autoplay muted loop playsinline><source src="video4.mp4" type="video/mp4"></video></div></div>
+      <div class="polaroid p5"><div class="frame"><video autoplay muted loop playsinline><source src="video5.mp4" type="video/mp4"></video></div></div>
+    </div>
+  </div>
+
+  <!-- Música de fondo -->
+  <audio id="bg-audio" src="no_hay_nadie_mas.mp3" autoplay loop></audio>
+
+  <!-- Control -->
+  <div class="sound-control" id="soundToggle">🔊 Música activada</div>
+
+  <script>
+    const audio = document.getElementById('bg-audio');
+    const btn = document.getElementById('soundToggle');
+
+    // Forzar autoplay en móviles
+    const tryPlay = () => {
+      audio.volume = 1.0;
+      audio.play().then(() => {
+        btn.innerHTML = '🔊 Música activada';
+      }).catch(() => {
+        btn.innerHTML = '🔇 Tocar para activar música';
+      });
+    };
+
+    // Intentar al cargar
+    window.addEventListener('load', tryPlay);
+
+    // En algunos iPhone, se requiere interacción mínima
+    document.body.addEventListener('touchstart', tryPlay, { once: true });
+
+    // Control manual
+    btn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        btn.innerHTML = '🔊 Música activada';
+      } else {
+        audio.pause();
+        btn.innerHTML = '🔇 Música pausada';
+      }
+    });
+  </script>
+
+</body>
+</html>
