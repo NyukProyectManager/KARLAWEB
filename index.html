@@ -1,214 +1,439 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Para mi Coneja 💞</title>
-  <style>
-    :root {
-      --fondo: url("fondoflores.png");
-      --sombra: 0 6px 20px rgba(0,0,0,0.35);
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>Para mi Coneja 💞</title>
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+<!-- Google font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-    body {
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      font-family: 'Poppins', sans-serif;
-      background: #e8e5dd;
-    }
+<style>
+  :root{
+    --fondo: url("fondo.jpeg");
+    --accent: #ff759d;
+    --accent-2: #ffb6c1;
+    --sombra: 0 8px 24px rgba(0,0,0,0.3);
+    --darken-opacity: 0.48; /* cuán oscuro se pone el fondo al mostrar el collage */
+  }
 
-    /* --- Pantalla de inicio --- */
-    .inicio {
-      position: fixed;
-      inset: 0;
-      background-image: var(--fondo);
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      backdrop-filter: blur(3px);
-      z-index: 1000;
-      transition: opacity 0.8s ease;
-    }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Poppins",sans-serif;
+    background-image: var(--fondo);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height:100vh;
+    color:#222;
+    overflow-x:hidden;
+  }
 
-    .inicio h1 {
-      color: white;
-      font-size: clamp(1.4rem, 4vw, 2rem);
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
-      margin-bottom: 25px;
-      padding: 0 15px;
-    }
+  /* Overlay that darkens the background when the collage is shown */
+  .darken-overlay{
+    position:fixed;inset:0;
+    background:linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.0));
+    pointer-events:none;
+    opacity:0;
+    transition:opacity 600ms ease;
+    z-index: 700;
+    mix-blend-mode: multiply;
+  }
 
-    .botones {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      position: relative;
-      width: 240px;
-      height: 60px;
-      touch-action: none;
-    }
+  .darken-overlay.active{
+    background: rgba(0,0,0,var(--darken-opacity));
+    opacity:1;
+  }
 
-    button {
-      padding: 12px 26px;
-      font-size: 1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: transform 0.2s ease, background 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      position: absolute;
-    }
+  /* Floating emojis container (decorative, pointer-events none) */
+  .float-emojis{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index: 850;
+    overflow:visible;
+  }
+  .float-emoji{
+    position:absolute;
+    will-change: transform, opacity;
+    font-size: 26px;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+    animation-name: floatUp;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    opacity: .95;
+    pointer-events: none;
+  }
 
-    #si {
-      background: #ff7f95;
-      color: white;
-      left: 20px;
-    }
+  @keyframes floatUp{
+    0%{ transform: translateY(8vh) translateX(0) rotate(0deg); opacity: 0; }
+    10%{ opacity: 1; }
+    50%{ transform: translateY(-30vh) translateX(10px) rotate(6deg); }
+    100%{ transform: translateY(-100vh) translateX(-10px) rotate(-6deg); opacity: 0; }
+  }
 
-    #no {
-      background: white;
-      color: #ff7f95;
-      right: 20px;
-    }
+  /* Pantalla inicial con fondo rosa */
+  .inicio{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background: linear-gradient(180deg, var(--accent-2) 0%, #ff89a0 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:1000;transition:opacity 0.8s ease, transform 0.6s ease;
+    padding: 24px;
+  }
+  .inicio.hidden{ opacity:0; transform: translateY(-10px); pointer-events:none }
 
-    button:active {
-      transform: scale(0.9);
-    }
+  .inicio h1{
+    color:white;font-size:clamp(1.2rem,4vw,1.9rem);
+    text-shadow: 2px 6px 20px rgba(0,0,0,0.35);
+    margin-bottom:22px;text-align:center;line-height:1.2;
+  }
 
-    /* --- Collage principal --- */
-    .stage {
-      background-image: var(--fondo);
-      background-size: cover;
-      background-position: center;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 1.2s ease;
-    }
+  .botones{
+    position:relative;width:100%;max-width:320px;height:64px;
+    display:flex;align-items:center;justify-content:center;gap:18px;
+  }
+  button{
+    padding:12px 26px;border:none;border-radius:34px;font-size:1rem;font-weight:700;
+    cursor:pointer;transition:all .25s cubic-bezier(.2,.9,.3,1);outline:none;
+  }
+  #si{
+    background:linear-gradient(180deg,var(--accent),#ff3b86);
+    color:white;box-shadow:var(--sombra);z-index:2;
+  }
+  /* El botón "no" ahora empieza en flujo normal (no absolute). Cuando se mueva, el script lo pondrá absolute dentro del contenedor */
+  #no{
+    background:white;color:var(--accent);box-shadow:var(--sombra);
+    position:static;
+    z-index:1;
+  }
+  button:active{ transform: scale(.96) }
 
-    .canvas {
-      position: relative;
-      width: min(95%, 420px);
-      height: 95%;
-      animation: fadeIn 1.2s ease-in-out;
-    }
+  /* small helper for audio control */
+  .audio-control{
+    position:fixed; right:16px; bottom:16px; z-index:1100;
+    background: rgba(255,255,255,0.9); border-radius:999px; padding:8px;
+    box-shadow: var(--sombra);
+    display:flex; gap:8px; align-items:center;
+  }
+  .audio-control button{ background:transparent; border:none; cursor:pointer; font-size:1.05rem; padding:4px }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.97); }
-      to { opacity: 1; transform: scale(1); }
-    }
+  /* Collage layout */
+  .collage{
+    display:flex;flex-direction:column;align-items:center;gap:22px;padding:48px 8px;
+    opacity:0; transition:opacity 1s ease; z-index:800; position:relative;
+    margin-top:36px;
+  }
+  .collage.visible{ opacity:1 }
 
-    .polaroid {
-      position: absolute;
-      background: white;
-      border-radius: 8px;
-      box-shadow: var(--sombra);
-      padding: 8px;
-      transition: transform 0.4s ease;
-    }
+  .polaroid{
+    background:white;border-radius:12px;box-shadow:var(--sombra);
+    padding:10px; width:88%; max-width:520px; transform: rotate(var(--r));
+    transition: transform .35s ease, box-shadow .35s ease;
+    cursor: pointer;
+  }
+  .polaroid:focus{ outline: 3px solid rgba(255,117,157,0.15) }
 
-    .polaroid:hover { transform: scale(1.05); z-index: 5; }
+  .polaroid:hover{ transform: scale(1.04) rotate(0deg); box-shadow: 0 18px 40px rgba(0,0,0,0.36); }
 
-    .frame {
-      background: #000;
-      width: 100%;
-      height: calc(100% - 16px);
-      border-radius: 4px;
-      overflow: hidden;
-    }
+  .frame{ background:#000; border-radius:8px; overflow:hidden; position:relative; }
+  video{
+    width:100%; height:auto; display:block; transition: transform .35s ease, filter .35s ease;
+    transform-origin:center center;
+    -webkit-backface-visibility:hidden;
 
-    video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    /* START darker by default */
+    filter: brightness(0.48) saturate(0.9) contrast(0.96);
+    transform: scale(1);
+  }
 
-    /* Posiciones */
-    .p1 { top: 3%; left: 10%; width: 80%; height: 21%; transform: rotate(-4deg); }
-    .p2 { top: 26%; right: 6%; width: 78%; height: 21%; transform: rotate(3deg); }
-    .p3 { top: 50%; left: 10%; width: 80%; height: 21%; transform: rotate(-3deg); }
-    .p4 { bottom: 4%; right: 8%; width: 78%; height: 21%; transform: rotate(4deg); }
-    .p5 { top: 39%; left: 17%; width: 66%; height: 20%; transform: rotate(-7deg); }
+  /* glow & brighten when hovering/touching a polaroid */
+  .polaroid:hover .frame video,
+  .polaroid.hovering .frame video{
+    transform: scale(1.06);
+    filter: brightness(1.12) saturate(1.08) contrast(1.03) drop-shadow(0 20px 40px rgba(255,120,150,0.15));
+  }
 
-    @media (max-width: 480px) {
-      .canvas { width: 94vw; height: 94vh; }
-      .p1, .p2, .p3, .p4, .p5 { width: 90%; height: 17%; }
-      .botones { width: 200px; height: 50px; }
-      button { font-size: 0.9rem; padding: 10px 20px; }
-    }
-  </style>
+  /* small decorative sticker */
+  .sticker{
+    position: absolute; right: 16px; top: 16px; background: linear-gradient(90deg,#fff,#ffe6f0);
+    padding:6px 10px;border-radius:999px;font-weight:700;color:var(--accent);box-shadow:0 8px 18px rgba(255,117,157,0.12);
+    font-size:0.85rem; pointer-events:none;
+  }
+
+  /* entrance animation for polaroids */
+  @keyframes popIn {
+    from { transform: translateY(18px) scale(.98); opacity:0 }
+    to   { transform: translateY(0) scale(1); opacity:1 }
+  }
+  .polaroid { animation: popIn .6s ease both; }
+
+  /* responsive tweaks */
+  @media (max-width:480px){
+    .botones{ width:90%;height:52px }
+    .polaroid{ width:94% }
+    .sticker{ display:none }
+    .float-emoji{ font-size:20px }
+  }
+</style>
 </head>
 <body>
 
-  <!-- Pantalla inicial -->
-  <div class="inicio" id="inicio">
-    <h1>¿Estás lista, coneja? 🐰💞</h1>
-    <div class="botones">
-      <button id="si">Sí 💖</button>
-      <button id="no">No 💔</button>
-    </div>
+<div class="darken-overlay" id="darken"></div>
+<div class="float-emojis" id="floatEmojis" aria-hidden="true"></div>
+
+<!-- Pantalla inicial -->
+<div class="inicio" id="inicio" role="dialog" aria-label="Pantalla de inicio">
+  <h1>¿Estás lista, coneja? 🐰💞</h1>
+  <div class="botones" id="botones" aria-hidden="false">
+    <button id="si" aria-label="Sí, estoy lista">Sí 💖</button>
+    <button id="no" aria-label="No, no quiero">No 💔</button>
+  </div>
+</div>
+
+<!-- Collage -->
+<div class="collage" id="collage" aria-live="polite">
+  <div class="polaroid" style="--r:-4deg;" tabindex="0">
+    <div class="sticker">Para ti</div>
+    <div class="frame"><video muted loop playsinline preload="metadata"><source src="video1.mp4" type="video/mp4"></video></div>
   </div>
 
-  <!-- Collage principal -->
-  <div class="stage" id="collage">
-    <div class="canvas">
-      <div class="polaroid p1"><div class="frame"><video autoplay muted loop playsinline><source src="video1.mp4" type="video/mp4"></video></div></div>
-      <div class="polaroid p2"><div class="frame"><video autoplay muted loop playsinline><source src="video2.mp4" type="video/mp4"></video></div></div>
-      <div class="polaroid p3"><div class="frame"><video autoplay muted loop playsinline><source src="video3.mp4" type="video/mp4"></video></div></div>
-      <div class="polaroid p4"><div class="frame"><video autoplay muted loop playsinline><source src="video4.mp4" type="video/mp4"></video></div></div>
-      <div class="polaroid p5"><div class="frame"><video autoplay muted loop playsinline><source src="video5.mp4" type="video/mp4"></video></div></div>
-    </div>
+  <div class="polaroid" style="--r:3deg;" tabindex="0">
+    <div class="sticker">Recuerdos</div>
+    <div class="frame"><video muted loop playsinline preload="metadata"><source src="video2.mp4" type="video/mp4"></video></div>
   </div>
 
-  <!-- Música -->
-  <audio id="bg-audio" src="no_hay_nadie_mas.mp3" loop></audio>
+  <div class="polaroid" style="--r:-2deg;" tabindex="0">
+    <div class="sticker">Te amo</div>
+    <div class="frame"><video muted loop playsinline preload="metadata"><source src="video3.mp4" type="video/mp4"></video></div>
+  </div>
 
-  <script>
-    const inicio = document.getElementById('inicio');
-    const collage = document.getElementById('collage');
-    const audio = document.getElementById('bg-audio');
-    const btnSi = document.getElementById('si');
-    const btnNo = document.getElementById('no');
-    const botones = document.querySelector('.botones');
+  <div class="polaroid" style="--r:4deg;" tabindex="0">
+    <div class="sticker">Siempre</div>
+    <div class="frame"><video muted loop playsinline preload="metadata"><source src="video4.mp4" type="video/mp4"></video></div>
+  </div>
 
-    // Entrar con "Sí"
-    btnSi.addEventListener('click', () => {
-      inicio.style.opacity = '0';
-      setTimeout(() => inicio.style.display = 'none', 800);
-      collage.style.opacity = '1';
-      audio.volume = 1.0;
-      audio.play().catch(() => console.log("Autoplay bloqueado, requiere interacción"));
-    });
+  <div class="polaroid" style="--r:-5deg;" tabindex="0">
+    <div class="sticker">Besitos</div>
+    <div class="frame"><video muted loop playsinline preload="metadata"><source src="video5.mp4" type="video/mp4"></video></div>
+  </div>
+</div>
 
-    // Movimiento travieso del botón "No"
-    btnNo.addEventListener('mouseenter', moveNo);
-    btnNo.addEventListener('click', moveNo);
-    btnNo.addEventListener('touchstart', moveNo);
+<!-- Música & controls -->
+<audio id="bg-audio" src="no_hay_nadie_mas.mp3" loop></audio>
+<div class="audio-control" id="audioControl" aria-hidden="false">
+  <button id="audioToggle" aria-label="Reproducir música">▶️</button>
+  <label style="font-size:.9rem;color:#333;user-select:none">Música</label>
+</div>
 
-    function moveNo() {
-      const container = botones.getBoundingClientRect();
-      const noRect = btnNo.getBoundingClientRect();
-      const maxX = container.width - noRect.width - 10;
-      const maxY = container.height - noRect.height - 10;
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
+<script>
+  const inicio = document.getElementById('inicio');
+  const collage = document.getElementById('collage');
+  const audio = document.getElementById('bg-audio');
+  const btnSi = document.getElementById('si');
+  const btnNo = document.getElementById('no');
+  const botones = document.getElementById('botones');
+  const darken = document.getElementById('darken');
+  const floatEmojis = document.getElementById('floatEmojis');
+  const audioToggle = document.getElementById('audioToggle');
 
-      btnNo.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
-      btnNo.style.transition = 'transform 0.3s cubic-bezier(0.25, 1.2, 0.5, 1)';
-      setTimeout(() => btnNo.style.transform = `translate(${x}px, ${y}px) scale(1)`, 350);
+  // "No" button movement: when moved we set absolute inside container; otherwise it stays in flow
+  function moveNo(){
+    const cont = botones.getBoundingClientRect();
+    const noRect = btnNo.getBoundingClientRect();
+    const padding = 8;
+    const maxX = Math.max(0, cont.width - noRect.width - padding);
+    const maxY = Math.max(0, cont.height - noRect.height - padding);
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
+
+    // ensure btnNo is positioned absolute relative to container
+    btnNo.style.position = 'absolute';
+    btnNo.style.left = `${x}px`;
+    btnNo.style.top = `${y}px`;
+    btnNo.style.transform = ''; // reset any transform
+  }
+  btnNo.addEventListener('mouseenter', moveNo);
+  btnNo.addEventListener('click', moveNo);
+  btnNo.addEventListener('touchstart', (e)=>{ e.preventDefault(); moveNo(); });
+
+  // Show collage and darken background when "Sí" clicked
+  btnSi.addEventListener('click', async () => {
+    // hide intro
+    inicio.classList.add('hidden');
+    // show darken overlay and collage
+    darken.classList.add('active');
+    collage.classList.add('visible');
+
+    // Try to play audio, update button UI
+    audio.volume = 1.0;
+    try{
+      await audio.play();
+      audioToggle.textContent = '⏸️';
+    }catch(err){
+      // autoplay may be blocked — leave control to user
+      console.log('Autoplay blocked:', err);
+      audioToggle.textContent = '▶️';
     }
-  </script>
+    // spawn a lot of floating emojis initially
+    spawnEmojis(24);
+    // start steady decoration spawning
+    startEmojiStreams();
+  });
+
+  // audio control toggle
+  audioToggle.addEventListener('click', () => {
+    if (audio.paused){
+      audio.play().then(()=> audioToggle.textContent = '⏸️').catch(()=> audioToggle.textContent = '▶️');
+    } else {
+      audio.pause();
+      audioToggle.textContent = '▶️';
+    }
+  });
+
+  // Floating emojis generator (lista solicitada)
+  const emojis = ['💖','🌸','💞','🌹','💕','✨','🐰'];
+
+  function spawnEmojis(count = 8, opts = {}) {
+    // cap total emojis in DOM
+    const MAX_EMOJIS = 120;
+    const existing = floatEmojis.children.length;
+    if (existing > MAX_EMOJIS) {
+      // remove some older nodes
+      Array.from(floatEmojis.children).slice(0, 20).forEach(n => n.remove());
+    }
+
+    for (let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'float-emoji';
+      const emoji = emojis[Math.floor(Math.random()*emojis.length)];
+      el.textContent = emoji;
+
+      // randomize initial horizontal position and animation
+      const left = Math.random()*100; // vw percent
+      const size = 16 + Math.random()*36; // px (allow larger sizes)
+      const minDur = 7, maxDur = 14;
+      const dur = (opts.dur !== undefined) ? opts.dur : (minDur + Math.random()*(maxDur-minDur));
+      const delay = (opts.delay !== undefined) ? opts.delay : Math.random()*2;
+      el.style.left = `${left}vw`;
+      el.style.bottom = `${-6 - Math.random()*8}vh`;
+      el.style.fontSize = `${size}px`;
+      el.style.animationDuration = `${dur}s`;
+      el.style.animationDelay = `${delay}s`;
+      el.style.opacity = 0;
+      floatEmojis.appendChild(el);
+
+      // remove after animation ends
+      setTimeout(()=> {
+        try { el.remove(); } catch(e){}
+      }, (dur + delay + 0.5) * 1000);
+    }
+  }
+
+  // Continuous streams and periodic bursts:
+  let emojiStreamInterval = null;
+  let emojiMinuteBurstInterval = null;
+  function startEmojiStreams(){
+    // avoid starting multiple times
+    if (emojiStreamInterval) return;
+
+    // steady gentle stream: every 4s spawn a few
+    emojiStreamInterval = setInterval(()=>{
+      // spawn a mix: mostly small ones, sometimes a bit more
+      const r = Math.random();
+      if (r < 0.6) spawnEmojis(3);
+      else if (r < 0.9) spawnEmojis(6);
+      else spawnEmojis(10);
+    }, 4000);
+
+    // every minute, do a visible burst (un "poco más")
+    emojiMinuteBurstInterval = setInterval(()=>{
+      spawnEmojis(28, { dur: 9 });
+    }, 60 * 1000);
+  }
+
+  function stopEmojiStreams(){
+    clearInterval(emojiStreamInterval); emojiStreamInterval = null;
+    clearInterval(emojiMinuteBurstInterval); emojiMinuteBurstInterval = null;
+  }
+
+  // Video hover/touch glow: add class on touchstart to emulate hover on mobile
+  document.querySelectorAll('.polaroid').forEach(p => {
+    p.addEventListener('touchstart', (ev) => {
+      ev.preventDefault();
+      p.classList.add('hovering');
+      const v = p.querySelector('video');
+      if (v){
+        v.play().catch(()=>{});
+      }
+      setTimeout(()=> p.classList.remove('hovering'), 1200);
+    }, {passive:false});
+
+    p.addEventListener('mouseenter', () => {
+      const v = p.querySelector('video');
+      p.classList.add('hovering');
+      if (v) v.play().catch(()=>{});
+    });
+    p.addEventListener('mouseleave', () => {
+      p.classList.remove('hovering');
+      const v = p.querySelector('video');
+      if (v) v.pause();
+    });
+  });
+
+  // Accessibility: keyboard focus to "hover" effect
+  document.querySelectorAll('.polaroid').forEach(p => {
+    p.addEventListener('focus', () => {
+      p.classList.add('hovering');
+      const v = p.querySelector('video');
+      if (v) v.play().catch(()=>{});
+    });
+    p.addEventListener('blur', () => {
+      p.classList.remove('hovering');
+      const v = p.querySelector('video');
+      if (v) v.pause();
+    });
+  });
+
+  // On page load, make sure video elements are paused by default and dark (CSS handles darkness)
+  window.addEventListener('load', () => {
+    document.querySelectorAll('video').forEach(v => {
+      v.pause();
+      v.playsInline = true;
+    });
+  });
+
+  // If user declines (No) many times — gentle fallback: after 6 tries show hint
+  let noClicks = 0;
+  btnNo.addEventListener('click', () => {
+    noClicks++;
+    if (noClicks > 6){
+      btnNo.animate([{transform:'translateY(-4px)'},{transform:'translateY(0)'}],{duration:400,iterations:2});
+    }
+  });
+
+  // keep "no" movement within visible area if container resizes
+  window.addEventListener('resize', () => {
+    const cont = botones.getBoundingClientRect();
+    const noRect = btnNo.getBoundingClientRect();
+    // if btnNo is absolute, ensure it's inside
+    if (getComputedStyle(btnNo).position === 'absolute') {
+      const left = parseFloat(btnNo.style.left || 0);
+      if (left > cont.width - noRect.width) btnNo.style.left = `${Math.max(0, cont.width - noRect.width - 8)}px`;
+      const top = parseFloat(btnNo.style.top || 0);
+      if (top > cont.height - noRect.height) btnNo.style.top = `${Math.max(0, cont.height - noRect.height - 8)}px`;
+    }
+  });
+
+  // Optional: stop emoji streams when leaving the page/tab to reduce work
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopEmojiStreams();
+    else {
+      // restart when visible if collage already shown
+      if (collage.classList.contains('visible')) startEmojiStreams();
+    }
+  });
+
+</script>
 </body>
 </html>
